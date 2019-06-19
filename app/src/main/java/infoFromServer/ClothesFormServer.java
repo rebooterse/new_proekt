@@ -2,7 +2,7 @@ package infoFromServer;
 
 import android.support.v7.app.AppCompatActivity;
 
-import com.mxn.soul.flowingdrawer.R;
+import com.mxn.soul.flowingdr.R;
 
 import java.util.ArrayList;
 import java.util.List;

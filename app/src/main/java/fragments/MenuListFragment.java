@@ -1,7 +1,7 @@
 
 package fragments;
 
-import com.mxn.soul.flowingdrawer.R;
+import com.mxn.soul.flowingdr.R;
 
 import android.os.Bundle;
 import android.support.annotation.Nullable;

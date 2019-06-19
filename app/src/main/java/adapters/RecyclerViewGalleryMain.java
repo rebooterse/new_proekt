@@ -1,5 +1,8 @@
 package adapters;
 
+import android.annotation.SuppressLint;
+import android.content.Context;
+import android.content.Intent;
 import android.graphics.Color;
 import android.support.annotation.NonNull;
 import android.support.v7.widget.RecyclerView;
@@ -9,21 +12,38 @@ import android.view.ViewGroup;
 import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.TextView;
+import android.widget.Toast;
 
-import com.mxn.soul.flowingdrawer.R;
+import com.mxn.soul.flowingdr.FullScreenImage;
+import com.mxn.soul.flowingdr.R;
 
 import java.util.List;
 
 import models.Clothes;
 
 public class RecyclerViewGalleryMain extends RecyclerView.Adapter<RecyclerViewGalleryMain.ViewHolder> {
+    @SuppressLint("StaticFieldLeak")
+  public static int resurse;
+    int img;
+    int img1;
+
+
+
+  private ImageView imageViewForFullScreen;
+    private  TextView copyShopNameTextOnImage;
+    private TextView copyPriceTextOnImage;
+    private ImageButton copyOnImageFullScreen;
+    private ImageButton copyOnImageFavorite;
+
+    Context context;
 
     private List<Clothes> clothesList;
     private OnClickListenerFullScreen mOnClickListenerFullScreen;
     private OnClickListenerShop mOnClickListenerShop;
 
     public RecyclerViewGalleryMain(List<Clothes> clothesList, OnClickListenerFullScreen onClickListenerFullScreen
-    , OnClickListenerShop mOnClickListenerShop) {
+    , OnClickListenerShop mOnClickListenerShop,Context context) {
+        this.context = context;
         this.clothesList = clothesList;
         this.mOnClickListenerFullScreen = onClickListenerFullScreen;
         this.mOnClickListenerShop = mOnClickListenerShop;
@@ -33,24 +53,58 @@ public class RecyclerViewGalleryMain extends RecyclerView.Adapter<RecyclerViewGa
     @Override
     public ViewHolder onCreateViewHolder(@NonNull ViewGroup viewGroup, int viewType) {
 
+
         View view = LayoutInflater.from(viewGroup.getContext()).inflate(R.layout.item_rv_gallery_main, viewGroup, false);
+
         return new ViewHolder(view, mOnClickListenerFullScreen, mOnClickListenerShop);
     }
 
     @Override
     public void onBindViewHolder(@NonNull final ViewHolder viewHolder, int position) {
-        int img = clothesList.get(position).getClotheImage();
+
+          img = clothesList.get(viewHolder.getAdapterPosition()).getClotheImage();
+          img1 = clothesList.get(viewHolder.getAdapterPosition()).getClotheImage();
+
+
+
+
         viewHolder.image.setImageResource(img);
+        viewHolder.image.setTag(img);
+
         viewHolder.image.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                if(imageViewForFullScreen != null ){
+                    imageViewForFullScreen.clearColorFilter();
+                    copyShopNameTextOnImage.setVisibility(View.INVISIBLE);
+                   copyPriceTextOnImage.setVisibility(View.INVISIBLE);
+                   copyOnImageFullScreen.setVisibility(View.INVISIBLE);
+                   copyOnImageFavorite.setVisibility(View.INVISIBLE);
+
+
+                }
                 if (viewHolder.priceTextOnImage.getVisibility() == View.INVISIBLE) {
                     viewHolder.image.setColorFilter(Color.HSVToColor(170, new float[3]));
                     viewHolder.priceTextOnImage.setVisibility(View.VISIBLE);
                     viewHolder.onImageFavorite.setVisibility(View.VISIBLE);
                     viewHolder.onImageFullScreen.setVisibility(View.VISIBLE);
                     viewHolder.shopNameTextOnImage.setVisibility(View.VISIBLE);
+
+                    copyShopNameTextOnImage = viewHolder.itemView.findViewById(viewHolder.shopNameTextOnImage.getId());
+                    copyPriceTextOnImage = viewHolder.itemView.findViewById(viewHolder.priceTextOnImage.getId());
+                   copyOnImageFullScreen = viewHolder.itemView.findViewById(viewHolder.onImageFullScreen.getId());
+                   copyOnImageFavorite = viewHolder.itemView.findViewById(viewHolder.onImageFavorite.getId());
+                    imageViewForFullScreen = viewHolder.itemView.findViewById(viewHolder.image.getId());
+
                 }
+            }
+        });
+        viewHolder.onImageFullScreen.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                resurse = img1;
+                context.startActivity(new Intent(context,FullScreenImage.class));
+                Toast.makeText(context, String.valueOf(resurse), Toast.LENGTH_SHORT).show();
             }
         });
     }
@@ -80,21 +134,6 @@ public class RecyclerViewGalleryMain extends RecyclerView.Adapter<RecyclerViewGa
             onImageFullScreen = itemView.findViewById(R.id.onImage_fullScreen);
             shopNameTextOnImage = itemView.findViewById(R.id.shopNameText_onImage_main);
 
-            this.onClickListenerFullScreen = onClickListenerFullScreen;
-            onImageFullScreen.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View v) {
-                    onClickListenerFullScreen.onItemImageFullScreenClick(getAdapterPosition());
-                }
-            });
-
-            this.onClickListenerShop = onClickListenerShop;
-            shopNameTextOnImage.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View v) {
-                    onClickListenerShop.onItemImageShopClick(getAdapterPosition());
-                }
-            });
         }
     }
 

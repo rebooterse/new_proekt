@@ -10,7 +10,7 @@ import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.TextSwitcher;
 
-import com.mxn.soul.flowingdrawer.R;
+import com.mxn.soul.flowingdr.R;
 
 
 public class SalesRecViewAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
