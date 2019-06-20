@@ -17,7 +17,7 @@ public class FullScreenImage extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_full_screen_image);
       ImageView  fullScreenImagex = findViewById(R.id.full_screen_image);
-fullScreenImagex.setImageResource(RecyclerViewGalleryMain.resurse);
+
 
 
 

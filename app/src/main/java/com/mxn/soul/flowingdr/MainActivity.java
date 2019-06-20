@@ -1,18 +1,38 @@
 package com.mxn.soul.flowingdr;
 
 import android.os.Bundle;
+import android.support.annotation.NonNull;
+import android.support.annotation.Nullable;
 import android.support.v4.app.FragmentManager;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.StaggeredGridLayoutManager;
 import android.widget.Toast;
 
+
+import com.google.firebase.database.ChildEventListener;
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.GenericTypeIndicator;
+import com.google.firebase.database.ValueEventListener;
 import com.mxn.soul.flowingdrawer_core.ElasticDrawer;
 import com.mxn.soul.flowingdrawer_core.FlowingDrawer;
+
+
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.HashMap;
+import java.util.LinkedHashMap;
+import java.util.List;
+import java.util.Map;
 
 import adapters.RecyclerViewGalleryMain;
 import fragments.MenuListFragment;
 import infoFromServer.ClothesFormServer;
+import models.Clothes;
+
 
 public class MainActivity extends ClothesFormServer implements RecyclerViewGalleryMain.OnClickListenerFullScreen,
         RecyclerViewGalleryMain.OnClickListenerShop {
@@ -28,6 +48,9 @@ public class MainActivity extends ClothesFormServer implements RecyclerViewGalle
         setContentView(R.layout.activity_main);
 
         mDrawer = findViewById(R.id.drawerlayout);
+        // Write a message to the database
+
+
 
         mDrawer.setTouchMode(ElasticDrawer.TOUCH_MODE_BEZEL);
         setupMenu();
@@ -43,31 +66,50 @@ public class MainActivity extends ClothesFormServer implements RecyclerViewGalle
             fm.beginTransaction().add(R.id.id_container_menu, mMenuFragment).commit();
         }
     }
-    // drawer bacel pakeln es xekavarum
-//       mDrawer.setOnDrawerStateChangeListener(new ElasticDrawer.OnDrawerStateChangeListener() {
-//           @Override
-//           public void onDrawerStateChange(int oldState, int newState) {
-//               if (newState == ElasticDrawer.STATE_CLOSED) {
-//                   Toast.makeText(MainActivity.this, "change", Toast.LENGTH_SHORT).show();
-//               }
-//           }
 
-//           @Override
-//           public void onDrawerSlide(float openRatio, int offsetPixels) {
-//               Toast.makeText(MainActivity.this, "slide", Toast.LENGTH_SHORT).show();
-//           }
-//       });
 
 
     private void galleryImages() {
         // gallery rv
-        RecyclerView myRecyclerView = findViewById(R.id.rv_main_activity);
-        RecyclerViewGalleryMain recyclerViewAdapter = new RecyclerViewGalleryMain(getClotheList()
-                , this, this,this);
+         List<Clothes> list;
+        final RecyclerView myRecyclerView = findViewById(R.id.rv_main_activity);
+        FirebaseDatabase database = FirebaseDatabase.getInstance();
+        final DatabaseReference myRef = database.getReference("message");
+        final List<Clothes> finalList = new ArrayList<>();
+
+        myRef.addValueEventListener(new ValueEventListener() {
+
+            @Override
+            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+
+            int i = 0;
+                for (DataSnapshot postSnapshot : dataSnapshot.child(String.valueOf(i)).getChildren()) {
+                    HashMap<String,Clothes> messageMap = (HashMap<String, Clothes>) postSnapshot.getValue();
+                    Collection<Clothes> messageItems = messageMap.values() ;
+
+                   finalList.addAll(messageItems);
+                   i++;
+                }
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError databaseError) {
+
+            }
+        });
+
+        for (int i = 0; i < 10000; i++) {
+            Toast.makeText(this,String.valueOf(i),Toast.LENGTH_SHORT);
+        }
+
+        RecyclerViewGalleryMain recyclerViewAdapter = new RecyclerViewGalleryMain(finalList
+                , MainActivity.this, MainActivity.this,MainActivity.this);
         StaggeredGridLayoutManager staggeredGridLayoutManager = new StaggeredGridLayoutManager(NUM_COLUMNS, LinearLayoutManager.VERTICAL);
         myRecyclerView.setLayoutManager(staggeredGridLayoutManager);
         myRecyclerView.setAdapter(recyclerViewAdapter);
+        recyclerViewAdapter.notifyDataSetChanged();
     }
+
 
 
     @Override

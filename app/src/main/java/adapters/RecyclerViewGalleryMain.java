@@ -4,6 +4,7 @@ import android.annotation.SuppressLint;
 import android.content.Context;
 import android.content.Intent;
 import android.graphics.Color;
+import android.net.Uri;
 import android.support.annotation.NonNull;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
@@ -16,16 +17,23 @@ import android.widget.Toast;
 
 import com.mxn.soul.flowingdr.FullScreenImage;
 import com.mxn.soul.flowingdr.R;
+import com.squareup.picasso.Picasso;
 
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.io.InputStreamReader;
+import java.net.URI;
+import java.net.URL;
+import java.net.URLConnection;
 import java.util.List;
 
 import models.Clothes;
 
 public class RecyclerViewGalleryMain extends RecyclerView.Adapter<RecyclerViewGalleryMain.ViewHolder> {
     @SuppressLint("StaticFieldLeak")
-  public static int resurse;
-    int img;
-    int img1;
+
+   String img;
+
 
 
 
@@ -61,15 +69,13 @@ public class RecyclerViewGalleryMain extends RecyclerView.Adapter<RecyclerViewGa
 
     @Override
     public void onBindViewHolder(@NonNull final ViewHolder viewHolder, int position) {
+Clothes clothes = (Clothes)clothesList.get(position);
+          img = clothes.getClotheImage();
 
-          img = clothesList.get(viewHolder.getAdapterPosition()).getClotheImage();
-          img1 = clothesList.get(viewHolder.getAdapterPosition()).getClotheImage();
-
-
-
-
-        viewHolder.image.setImageResource(img);
-        viewHolder.image.setTag(img);
+        Uri uri = Uri.parse("https://media.dollskill.com/media/7iCwqVpvZHkYfFbE1srRX28zeaa8q5nw-34.jpg");
+        Picasso.with(context)
+                .load(uri)
+                .into(viewHolder.image);
 
         viewHolder.image.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -102,9 +108,9 @@ public class RecyclerViewGalleryMain extends RecyclerView.Adapter<RecyclerViewGa
         viewHolder.onImageFullScreen.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                resurse = img1;
+
                 context.startActivity(new Intent(context,FullScreenImage.class));
-                Toast.makeText(context, String.valueOf(resurse), Toast.LENGTH_SHORT).show();
+
             }
         });
     }
@@ -115,6 +121,7 @@ public class RecyclerViewGalleryMain extends RecyclerView.Adapter<RecyclerViewGa
     }
 
     class ViewHolder extends RecyclerView.ViewHolder {
+
 
         ImageView image;
         TextView priceTextOnImage;
